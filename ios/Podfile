@@ -44,7 +44,7 @@ setup_permissions([
 ])
 
 
-platform :ios, min_ios_version_supported
+platform :ios, podfile_properties['ios.deploymentTarget'] || '13.4'
 # platform :ios, podfile_properties['ios.deploymentTarget'] || '15.1'
 install! 'cocoapods',
   :deterministic_uuids => false
@@ -54,22 +54,13 @@ prepare_react_native_project!
 target 'MusicFree' do
   use_expo_modules!
 
-  if ENV['EXPO_USE_COMMUNITY_AUTOLINKING'] == '1'
-    config_command = ['node', '-e', "process.argv=['', '', 'config'];require('@react-native-community/cli').run()"];
-  else
-    config_command = [
-      'node',
-      '--no-warnings',
-      '--eval',
-      'require(require.resolve(\'expo-modules-autolinking\', { paths: [require.resolve(\'expo/package.json\')] }))(process.argv.slice(1))',
-      'react-native-config',
-      '--json',
-      '--platform',
-      'ios'
-    ]
-  end
+  pod 'MMKVCore', :podspec => './podspecs/MMKVCore.podspec'
+  pod 'MMKV', :podspec => './podspecs/MMKV.podspec'
+  pod 'SwiftDraw', :podspec => './podspecs/SwiftDraw.podspec'
+  pod 'fmt', :podspec => './podspecs/fmt.podspec'
+  pod 'libwebp', :podspec => './podspecs/libwebp.podspec'
 
-  config = use_native_modules!(config_command)
+  config = use_native_modules!
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
@@ -78,17 +69,67 @@ target 'MusicFree' do
     :path => config[:reactNativePath],
     :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
     # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/..",
-    :privacy_file_aggregation_enabled => podfile_properties['apple.privacyManifestAggregationEnabled'] != 'false',
+    :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
   post_install do |installer|
     react_native_post_install(
       installer,
       config[:reactNativePath],
-      :mac_catalyst_enabled => false,
-      :ccache_enabled => podfile_properties['apple.ccacheEnabled'] == 'true',
+      :mac_catalyst_enabled => false
     )
+
+    remove_swiftdraw_package_name_flag = lambda do |swift_flags|
+      next swift_flags unless swift_flags
+
+      flags = swift_flags.is_a?(Array) ? swift_flags : swift_flags.split(' ')
+      cleaned_flags = []
+      skip_next = false
+      flags.each do |flag|
+        if skip_next
+          skip_next = false
+          next
+        end
+        if flag == '-package-name'
+          skip_next = true
+          next
+        end
+        cleaned_flags << flag
+      end
+      cleaned_flags.join(' ')
+    end
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.4'
+        if target.name.start_with?('SwiftDraw')
+          config.build_settings['SWIFT_VERSION'] = '5.0'
+          swift_flags = config.build_settings['OTHER_SWIFT_FLAGS']
+          if swift_flags
+            config.build_settings['OTHER_SWIFT_FLAGS'] = remove_swiftdraw_package_name_flag.call(swift_flags)
+          end
+        end
+      end
+    end
+
+    Dir.glob(File.join(__dir__, 'Pods/Target Support Files/SwiftDraw*/*.xcconfig')).each do |path|
+      contents = File.read(path)
+      updated = contents.gsub(/\s-package-name\s+SwiftDraw/, '')
+      File.write(path, updated) if updated != contents
+    end
+
+    folly_time_header = File.join(__dir__, 'Pods/RCT-Folly/folly/portability/Time.h')
+    if File.exist?(folly_time_header)
+      contents = File.read(folly_time_header)
+      updated = contents.gsub(
+        '#if !FOLLY_HAVE_CLOCK_GETTIME && (defined(__MACH__) || defined(_WIN32))',
+        '#if !FOLLY_HAVE_CLOCK_GETTIME && (!defined(__APPLE__) || defined(_WIN32))'
+      )
+      if updated != contents
+        File.chmod(0o644, folly_time_header)
+        File.write(folly_time_header, updated)
+      end
+    end
 
     # This is necessary for Xcode 14, because it signs resource bundles by default
     # when building for devices.
