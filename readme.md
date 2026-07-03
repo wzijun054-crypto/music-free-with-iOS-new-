@@ -6,7 +6,7 @@
 ![GitHub package.json version](https://img.shields.io/github/package-json/v/zhuguibiao/MusicFree-ios)
 
 **更多信息请参考原项目 <https://github.com/maotoumao/MusicFree#readme>**
-> 基于MusiceFree修改的ios版本，提供可用的ipa包
+> 基于老 iOS 版本 [zhuguibiao/MusicFree-ios](https://github.com/zhuguibiao/MusicFree-ios) 更新维护，并同步安卓版/官方项目 [maotoumao/MusicFree](https://github.com/maotoumao/MusicFree) 的新版代码，目标是继续提供可用的 iOS/IPA 构建。
 
 ## ipa下载地址
 [ipa下载地址](https://github.com/zhuguibiao/MusicFree-ios/releases)
@@ -26,7 +26,7 @@
 ## 开发
 
 ### 工具版本
-- 代码版本: [v0.6.1](https://github.com/maotoumao/MusicFree/releases/tag/v0.6.1)
+- 代码版本: [v0.6.2](https://github.com/maotoumao/MusicFree/releases/tag/v0.6.2)
 - react-native: [0.76.5](https://reactnative-archive-august-2025.netlify.app/docs/0.76/set-up-your-environment)
 - yarn: 1.22.22
 - cocoapods: 1.16.2 // brew install cocoapods
