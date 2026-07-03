@@ -8,8 +8,6 @@
 **更多信息请参考原项目 <https://github.com/maotoumao/MusicFree#readme>**
 > 基于老 iOS 版本 [zhuguibiao/MusicFree-ios](https://github.com/zhuguibiao/MusicFree-ios) 更新维护，并同步安卓版/官方项目 [maotoumao/MusicFree](https://github.com/maotoumao/MusicFree) 的新版代码，目标是继续提供可用的 iOS/IPA 构建。
 
-## ipa下载地址
-[ipa下载地址](https://github.com/zhuguibiao/MusicFree-ios/releases)
 
 ## ipa安装
   1. AltStore (推荐)
