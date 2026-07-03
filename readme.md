@@ -1,9 +1,11 @@
 # MusicFree iOS
 
-This repository updates the old iOS package from `zhuguibiao/MusicFree-ios` with code and dependency alignment from the current Android/main MusicFree project `maotoumao/MusicFree`.
+This repository updates the old iOS package by original author `zhuguibiao` from `zhuguibiao/MusicFree-ios`, with code and dependency alignment from the current Android/main MusicFree project by original author `maotoumao` at `maotoumao/MusicFree`.
 
 ## Status
 
+- Credits: original iOS version by `zhuguibiao`; Android/main MusicFree project by `maotoumao`.
+- Unsigned IPA included at `build/MusicFree-unsigned.ipa`.
 - iOS project updated for Xcode 14.2.
 - React Native and Expo dependencies were refreshed for the iOS archive flow.
 - Local podspec patches are included for older iOS dependency compatibility.
