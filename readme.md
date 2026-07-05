@@ -16,7 +16,7 @@
 - 已加入本地 podspec 补丁，用于兼容旧 iOS 工程依赖。
 - 已包含未签名 IPA：`build/MusicFree-unsigned.ipa`。
 - 未签名 IPA 主要用于开发和测试打包验证，通常不能直接安装到 iPhone。
-
+- ios16.0以上闪退（本人xcode版本太低）
 ### 构建
 
 ```sh
